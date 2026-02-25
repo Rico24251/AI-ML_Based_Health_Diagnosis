@@ -38,8 +38,7 @@ backend/venv/
 backend/env/
 backend/__pycache__/
 backend/.env
-*.pkl
-*.pth
+
 
 # --- OS Files ---
 .DS_Store
