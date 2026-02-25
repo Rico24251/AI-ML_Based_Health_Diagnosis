@@ -37,7 +37,7 @@ model = models.densenet121()
 model.classifier = nn.Sequential(
     nn.Linear(1024, 256), nn.ReLU(), nn.Dropout(0.5), nn.Linear(256, 1)
 )
-model.load_state_dict(torch.load("densenet_pneumonia.pth"))
+model.load_state_dict(torch.load("densenet_pneumonia.pth", map_location=torch.device('cpu')))
 model.to(device)
 model.eval() 
 
