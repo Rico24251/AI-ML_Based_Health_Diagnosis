@@ -4,7 +4,7 @@ python-multipart
 torch
 torchvision
 Pillow
-google-generativeai
+google-genai
 groq
 scikit-learn
 numpy
