@@ -13,9 +13,9 @@ from groq import Groq
 import librosa
 import subprocess
 import os
-from sqlalchemy import create_engine, text # <-- NEW: Database tools
+from sqlalchemy import create_engine, text 
 
-# --- 1. SETUP LLM & DATABASE ---
+
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 app = FastAPI(title="Health AI Assistant API")
@@ -28,7 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- DATABASE CONNECTION & GUEST USER SETUP ---
+
 DB_URI = os.getenv("DB_URI")
 engine = None
 
@@ -49,12 +49,12 @@ if DB_URI:
     except Exception as e:
         print(f"❌ Database connection failed: {e}")
 
-# --- HELPER FUNCTION: Save to Database ---
+
 def save_diagnosis_to_db(scan_type: str, confidence_str: str, result_summary: str):
     if not engine:
-        return # Skip if database isn't connected
+        return 
     try:
-        # Convert "95.50%" string into a 95.5 float for the database
+        
         conf_float = float(confidence_str.replace('%', '')) if '%' in confidence_str else 0.0
         
         with engine.connect() as conn:
@@ -73,7 +73,7 @@ def save_diagnosis_to_db(scan_type: str, confidence_str: str, result_summary: st
         print(f"❌ DB Insert Error ({scan_type}): {e}")
 
 
-# --- 2. SETUP PYTORCH (The X-Ray Brain) ---
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = models.densenet121()
 model.classifier = nn.Sequential(
@@ -88,7 +88,7 @@ transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# --- 3. ENDPOINTS ---
+
 
 @app.post("/predict/pneumonia")
 async def predict_pneumonia(file: UploadFile = File(...)):
@@ -104,7 +104,6 @@ async def predict_pneumonia(file: UploadFile = File(...)):
         result = "PNEUMONIA" if probability >= 0.5 else "NORMAL"
         confidence_str = f"{probability * 100:.2f}%" if result == "PNEUMONIA" else f"{(1 - probability) * 100:.2f}%"
         
-        # <-- NEW: Save to DB
         save_diagnosis_to_db("Pneumonia X-Ray", confidence_str, result)
         
         return {"status": "success", "diagnosis": result, "confidence": confidence_str}
@@ -178,7 +177,7 @@ async def chat_with_ai(request: ChatRequest):
         
         ai_response_text = completion.choices[0].message.content
         
-        # <-- NEW: Save Chat to DB
+       
         if engine:
             try:
                 with engine.connect() as conn:
@@ -239,7 +238,7 @@ async def predict_diabetes(data: DiabetesData):
         result = "HIGH RISK FOR DIABETES" if prediction == 1 else "NORMAL"
         confidence_str = f"{probability * 100:.2f}%" if prediction == 1 else f"{(1 - probability) * 100:.2f}%"
         
-        # <-- NEW: Save to DB
+     
         save_diagnosis_to_db("Diabetes Risk", confidence_str, result)
         
         return {"status": "success", "diagnosis": result, "confidence": confidence_str}
@@ -262,7 +261,7 @@ async def predict_heart(data: HeartData):
         result = "HIGH RISK FOR HEART DISEASE" if prediction == 1 else "NORMAL"
         confidence_str = f"{probability * 100:.2f}%" if prediction == 1 else f"{(1 - probability) * 100:.2f}%"
         
-        # <-- NEW: Save to DB
+  
         save_diagnosis_to_db("Heart Disease Risk", confidence_str, result)
         
         return {"status": "success", "diagnosis": result, "confidence": confidence_str}
@@ -309,9 +308,9 @@ async def predict_parkinsons(audio: UploadFile = File(...)):
         prediction = model.predict(input_data)[0]
         
         result = "HIGH RISK FOR PARKINSON'S" if prediction == 1 else "NORMAL"
-        confidence_str = "84.2%" # Hardcoded based on your original file
+        confidence_str = "84.2%" 
         
-        # <-- NEW: Save to DB
+        
         save_diagnosis_to_db("Parkinson's Audio", confidence_str, result)
         
         if os.path.exists(raw_path): os.remove(raw_path)
@@ -331,14 +330,14 @@ async def get_patient_history():
     
     try:
         with engine.connect() as conn:
-            # 1. Find the guest user
+            
             guest_record = conn.execute(text("SELECT id FROM users WHERE email = 'guest@healthai.com'")).fetchone()
             if not guest_record:
-                return {"status": "success", "history": []} # No history yet
+                return {"status": "success", "history": []} 
             
             guest_id = guest_record[0]
             
-            # 2. Fetch all their past scans
+            
             diagnoses = conn.execute(text("""
                 SELECT id, scan_type, ai_confidence, result_summary, created_at 
                 FROM diagnoses WHERE user_id = :uid ORDER BY id DESC
@@ -349,21 +348,20 @@ async def get_patient_history():
             for row in diagnoses:
                 diag_id = row[0]
                 
-                # 3. Fetch the chat history attached to each scan
+               
                 chats = conn.execute(text("""
                     SELECT sender_role, message_text 
                     FROM chat_messages WHERE diagnosis_id = :did ORDER BY id ASC
                 """), {"did": diag_id}).fetchall()
                 
                 chat_list = [{"role": c[0], "text": c[1]} for c in chats]
-                
-                # 4. Package it up nicely for React
+              
                 history_data.append({
                     "id": diag_id,
                     "scan_type": row[1],
                     "confidence": row[2],
                     "summary": row[3],
-                    "date": row[4].strftime("%Y-%m-%d %H:%M:%S"), # Format the timestamp
+                    "date": row[4].strftime("%Y-%m-%d %H:%M:%S"),
                     "chats": chat_list
                 })
                 
