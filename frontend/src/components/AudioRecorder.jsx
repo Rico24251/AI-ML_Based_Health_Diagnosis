@@ -13,7 +13,6 @@ const AudioRecorder = ({ onRecordingComplete }) => {
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
 
-  // --- 1. Visualizer Logic ---
   const startVisualizer = (stream) => {
     audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
     const source = audioContextRef.current.createMediaStreamSource(stream);
@@ -30,7 +29,7 @@ const AudioRecorder = ({ onRecordingComplete }) => {
       animationRef.current = requestAnimationFrame(draw);
       analyserRef.current.getByteFrequencyData(dataArray);
 
-      ctx.fillStyle = '#f8fafc'; // bg-slate-50
+      ctx.fillStyle = '#f8fafc'; 
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -46,7 +45,7 @@ const AudioRecorder = ({ onRecordingComplete }) => {
     draw();
   };
 
-  // --- 2. Recording Controls ---
+  
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
