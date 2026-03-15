@@ -1,7 +1,7 @@
 import React from 'react';
 import { Activity, Droplet, HeartPulse, Mic } from 'lucide-react';
 
-// We define our 4 disease modules here to keep the code clean
+
 const diseases = [
   {
     id: 'pneumonia',
@@ -44,7 +44,7 @@ const diseases = [
 const DiseaseGrid = ({ onSelectDisease }) => {
   return (
     <div className="max-w-6xl mx-auto w-full px-4 py-8">
-      {/* 2x2 Grid Layout */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {diseases.map((disease) => (
