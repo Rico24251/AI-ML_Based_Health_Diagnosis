@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const DataForm = ({ diseaseId, onSubmit, disabled }) => {
-  // Define the required medical vitals for each disease
+  
   const formFields = {
     diabetes: [
       { name: 'Pregnancies', label: 'Pregnancies', type: 'number', placeholder: 'e.g., 0' },
