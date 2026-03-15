@@ -21,7 +21,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // This triggers EVERY time the messages array or chatLoading state updates
+  
   useEffect(() => {
     scrollToBottom();
   }, [messages, chatLoading]);
@@ -36,7 +36,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
     }
   };
 
-  // --- NEW: The function that handles follow-up questions ---
+  //handles follow-up questions ---
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -53,8 +53,8 @@ const DiagnosticModal = ({ disease, onClose }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          history: messages, // Send existing history
-          message: userMsg.parts // Send new message
+          history: messages, //send existing history
+          message: userMsg.parts //send new message
         })
       });
       
@@ -70,17 +70,17 @@ const DiagnosticModal = ({ disease, onClose }) => {
 
   const handleAnalyze = async (formData = null) => {
     setLoading(true);
-    setMessages([]); // Clear chat for new analysis
+    setMessages([]); //clear chat for new analysis
 
     if (disease.id === 'pneumonia' || disease.id === 'parkinsons') {
       if (!selectedFile) return;
       const dataPayload = new FormData();
       
-      // CRITICAL: Match the key to what the backend expects
+      
       if (disease.id === 'parkinsons') {
-        dataPayload.append("audio", selectedFile); // Backend: predict_parkinsons(audio: UploadFile)
+        dataPayload.append("audio", selectedFile); 
       } else {
-        dataPayload.append("file", selectedFile);  // Backend: predict_pneumonia(file: UploadFile)
+        dataPayload.append("file", selectedFile);  
       }
       
       const endpoint = disease.id === 'parkinsons' ? "/predict/parkinsons" : "/predict/pneumonia";
@@ -159,7 +159,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
 
       <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden flex flex-col md:flex-row">
         
-        {/* LEFT COLUMN: Uploader/Forms/Audio */}
+        
         <div className="w-full md:w-1/2 p-8 border-r border-slate-100">
           <div className="flex items-center space-x-4 mb-6">
             <div className={`p-3 rounded-xl ${disease.color}`}>{disease.icon}</div>
@@ -167,7 +167,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
           </div>
           <p className="text-slate-600 mb-8">{disease.description}</p>
 
-          {/* 1. Pneumonia Uploader */}
+          
           {disease.id === 'pneumonia' ? (
             <div className="space-y-6">
               <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition relative group cursor-pointer">
@@ -179,7 +179,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
             </div>
           ) 
           
-          /* 2. Diabetes & Heart Tabular Forms */
+          
           : disease.id === 'diabetes' || disease.id === 'heart' ? (
             <DataForm 
               diseaseId={disease.id} 
@@ -188,12 +188,12 @@ const DiagnosticModal = ({ disease, onClose }) => {
             />
           ) 
           
-          /* 3. Parkinson's Audio Recorder - THIS IS THE PART WE ARE ADDING */
-          /* 3. Parkinson's Audio Dual-Interface */
+          
+          
           : disease.id === 'parkinsons' ? (
             <div className="space-y-6">
               
-              {/* Custom Toggle Switch */}
+              
               <div className="flex bg-slate-100 p-1 rounded-xl shadow-inner border border-slate-200">
                 <button 
                   onClick={() => {setAudioMode('record'); setSelectedFile(null); setPreview(null);}} 
@@ -213,7 +213,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
                 </button>
               </div>
 
-              {/* Render either the Recorder OR the Uploader based on the toggle */}
+              
               {audioMode === 'record' ? (
                 <AudioRecorder onRecordingComplete={(blob) => setSelectedFile(blob)} />
               ) : (
@@ -230,7 +230,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
                     <p className="text-xs text-slate-400 mt-2">Supports MP3, WAV, M4A, OGG</p>
                   </div>
 
-                  {/* Audio Preview Player for uploaded files */}
+                  
                   {preview && (
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Selected File</p>
@@ -246,7 +246,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
             </div>
           ) 
           
-          /* 4. Fallback */
+          
           : (
             <div className="p-8 bg-slate-50 rounded-xl text-center border border-slate-200">
               <Activity className="w-8 h-8 text-slate-400 mx-auto mb-2" />
@@ -254,7 +254,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
             </div>
           )}
 
-          {/* Action Button: Visible for both Pneumonia and Parkinson's since they both use 'selectedFile' */}
+          
           {(disease.id === 'pneumonia' || disease.id === 'parkinsons') && (
             <button 
               onClick={() => handleAnalyze()} 
@@ -270,11 +270,11 @@ const DiagnosticModal = ({ disease, onClose }) => {
           )}
         </div>
 
-        {/* RIGHT COLUMN: Interactive AI Chatbot */}
+        
         <div className="w-full md:w-1/2 bg-slate-50 flex flex-col h-[600px] md:h-[800px] border-l border-slate-100">
           <div className="p-6 bg-white border-b border-slate-200 flex items-center justify-between">
             <h3 className="text-xl font-bold text-slate-800">Medical Consultation</h3>
-            {/* Only show the badge if the diagnosis was actually successful */}
+            
             {diagnosis && diagnosis.status === "success" && (
               <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                 diagnosis?.diagnosis?.includes("NORMAL") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
@@ -291,7 +291,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
             </div>
           ) : diagnosis.status === "error" ? (
             
-            /* --- NEW: ERROR STATE UI --- */
+           
             <div className="flex-grow flex flex-col items-center justify-center p-8 text-center animate-in fade-in">
               <div className="p-6 bg-red-50 text-red-700 rounded-2xl border border-red-200 max-w-sm">
                 <Activity className="w-10 h-10 mx-auto mb-3 text-red-500" />
@@ -302,7 +302,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
 
           ) : (
             
-            /* --- EXISTING SUCCESS STATE UI --- */
+            
             <>
               <div className="flex-grow overflow-y-auto p-6 space-y-6 bg-slate-50/50">
                 <div className={`p-5 rounded-2xl border-2 shadow-sm animate-in slide-in-from-top duration-500 ${
@@ -311,7 +311,7 @@ const DiagnosticModal = ({ disease, onClose }) => {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Current Finding</p>
-                      {/* FIX: Added the ?. optional chaining here */}
+                      
                       <h4 className={`text-2xl font-black ${
                         diagnosis?.diagnosis?.includes("NORMAL") ? "text-green-800" : "text-red-800"
                       }`}>
