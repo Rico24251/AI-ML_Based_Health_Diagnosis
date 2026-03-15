@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import DiseaseGrid from './components/DiseaseGrid'
 import DiagnosticModal from './components/DiagnosticModal'
-import PatientHistory from './components/PatientHistory' // <-- Added new component
-import { LayoutDashboard, History } from 'lucide-react' // <-- Added icons for the Nav Bar
+import PatientHistory from './components/PatientHistory' 
+import { LayoutDashboard, History } from 'lucide-react'
 
 function App() {
   const [activeDisease, setActiveDisease] = useState(null)
-  const [activeTab, setActiveTab] = useState('dashboard') // <-- New State for the Nav Switch
+  const [activeTab, setActiveTab] = useState('dashboard')
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center">
       
-      {/* --- NEW: Professional Top Navigation Bar --- */}
+     
       <nav className="w-full bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md">
@@ -20,7 +20,7 @@ function App() {
           <span className="font-extrabold text-2xl text-slate-800 tracking-tight">HealthAssistant</span>
         </div>
 
-        {/* The Toggle Switch */}
+        
         <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
           <button
             onClick={() => { setActiveTab('dashboard'); setActiveDisease(null); }}
@@ -43,15 +43,15 @@ function App() {
         </div>
       </nav>
 
-      {/* --- Main Content Area --- */}
+      
       <main className="w-full max-w-7xl flex-grow py-12 px-4 flex flex-col items-center">
         
-        {/* Router Logic: Show History OR Dashboard */}
+        
         {activeTab === 'history' ? (
           <PatientHistory />
         ) : (
           <>
-            {/* Dashboard Header - Only show if NO disease is selected */}
+            
             {!activeDisease && (
               <div className="text-center mb-12 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <h1 className="text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">Diagnostic Modules</h1>
@@ -61,7 +61,7 @@ function App() {
               </div>
             )}
 
-            {/* The Disease Logic */}
+            
             {activeDisease ? (
               <DiagnosticModal 
                 disease={activeDisease} 
