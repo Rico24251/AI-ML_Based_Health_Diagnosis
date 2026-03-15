@@ -7,7 +7,7 @@ export default function PatientHistory() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        // Automatically grabs your Hugging Face link from the environment variables
+        
         const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://rico24251-ai-ml-based-health-diagnosis.hf.space";
         
         const response = await fetch(`${backendUrl}/history`);
@@ -51,13 +51,13 @@ export default function PatientHistory() {
       {history.map((record) => (
         <div key={record.id} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
           
-          {/* Header Card */}
+          
           <div className="bg-blue-50 border-b border-blue-100 p-5 flex justify-between items-center">
             <h3 className="text-xl font-bold text-blue-800">{record.scan_type}</h3>
             <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full">{record.date}</span>
           </div>
           
-          {/* Main Results */}
+         
           <div className="p-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -70,7 +70,7 @@ export default function PatientHistory() {
               </div>
             </div>
 
-            {/* Chat History Section */}
+           
             {record.chats && record.chats.length > 0 && (
               <div className="mt-6 border-t pt-4">
                 <h4 className="text-sm font-bold text-gray-500 mb-4 uppercase tracking-wider flex items-center">
